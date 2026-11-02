@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劉芳君bmi系統</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+            background: #090d16;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            outline: none;
+        }
+
+        /* Title Gradient Shift Animation */
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc, #f43f5e, #38bdf8);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 6s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Neon Glow Orbs Background */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.45;
+            z-index: 0;
+            animation: orbFloat 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, -40px) scale(1.15); }
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 12px #38bdf8;
+            transition: transform 0.15s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        /* Progress Ring Animation */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between p-4 sm:p-8">
+
+    <!-- Ambient Background Glowing Orbs -->
+    <div class="orb w-72 h-72 bg-sky-500 top-10 left-10"></div>
+    <div class="orb w-96 h-96 bg-purple-600 bottom-10 right-10" style="animation-delay: -3s;"></div>
+    <div class="orb w-80 h-80 bg-rose-500 top-1/2 left-1/3" style="animation-delay: -6s;"></div>
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto w-full z-10 my-auto">
+        
+        <!-- Header Title -->
+        <header class="text-center mb-8">
+            <div class="inline-flex items-center gap-3 bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-md mb-3 border border-white/10">
+                <i class="fa-solid fa-heart-pulse text-rose-400 animate-pulse"></i>
+                <span class="text-xs font-bold tracking-wider text-slate-300 uppercase">衛福部標準 Health Standard</span>
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-black tracking-tight gradient-text mb-2">
+                劉芳君bmi系統
+            </h1>
+            <p class="text-sm sm:text-base text-slate-400 font-medium">專屬智慧體重管理與健康評估中心</p>
+        </header>
+
+        <!-- Main Interactive Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Left Form Input Section -->
+            <div class="lg:col-span-7 glass-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-sky-400"></i> 輸入生理資訊
+                    </h2>
+
+                    <!-- Height Input -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-sm font-bold text-slate-300">身高 Height (cm)</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="heightInput" min="50" max="230" value="165" class="w-20 text-center font-bold text-lg glass-input rounded-xl py-1 px-2">
+                                <span class="text-xs text-slate-400">cm</span>
+                            </div>
+                        </div>
+                        <input type="range" id="heightSlider" min="50" max="230" value="165" class="w-full cursor-pointer">
+                    </div>
+
+                    <!-- Weight Input -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-sm font-bold text-slate-300">體重 Weight (kg)</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="weightInput" min="20" max="200" value="60" class="w-20 text-center font-bold text-lg glass-input rounded-xl py-1 px-2">
+                                <span class="text-xs text-slate-400">kg</span>
+                            </div>
+                        </div>
+                        <input type="range" id="weightSlider" min="20" max="200" value="60" class="w-full cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button onclick="calculateBMI()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 hover:opacity-95 font-black text-lg text-white shadow-lg shadow-sky-500/25 active:scale-[0.98] transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-calculator"></i> 立即計算 BMI
+                </button>
+            </div>
+
+            <!-- Right Gauge Dashboard & Result -->
+            <div class="lg:col-span-5 glass-card rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                
+                <!-- Circular Animated Gauge -->
+                <div class="relative w-48 h-48 flex items-center justify-center mb-4">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle class="text-slate-800" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+                        <circle id="progressRing" class="progress-ring__circle" stroke-width="8" stroke="#38bdf8" fill="transparent" r="40" cx="50" cy="50" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round"/>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="text-xs text-slate-400 font-bold uppercase tracking-widest">BMI 數值</span>
+                        <span id="bmiScore" class="text-4xl font-black text-white my-0.5">--</span>
+                        <span id="bmiStatusBadge" class="px-3 py-0.5 rounded-full text-xs font-black bg-slate-800 text-slate-400 border border-white/10">尚未計算</span>
+                    </div>
+                </div>
+
+                <!-- Ideal Weight Suggestion -->
+                <div class="w-full bg-slate-900/60 rounded-2xl p-4 border border-white/5 text-left">
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-400 mb-1">
+                        <i class="fa-solid fa-bullseye text-emerald-400"></i> 理想體重建議 (BMI 18.5-24)
+                    </div>
+                    <div id="idealWeightText" class="text-base font-bold text-emerald-300">請調整參數計算結果</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Advice Card -->
+        <div id="adviceSection" class="glass-card rounded-3xl p-6 mt-6 hidden">
+            <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-user-doctor text-sky-400"></i> 劉芳君個人化健康指導建議
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-900/40 p-4 rounded-2xl border border-white/5">
+                    <h4 class="text-sm font-bold text-sky-300 mb-1"><i class="fa-solid fa-utensils mr-1"></i> 飲食調整指南</h4>
+                    <p id="dietAdvice" class="text-xs text-slate-300 leading-relaxed">計算後自動生成建議...</p>
+                </div>
+                <div class="bg-slate-900/40 p-4 rounded-2xl border border-white/5">
+                    <h4 class="text-sm font-bold text-purple-300 mb-1"><i class="fa-solid fa-person-running mr-1"></i> 運動維護建議</h4>
+                    <p id="exerciseAdvice" class="text-xs text-slate-300 leading-relaxed">計算後自動生成建議...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Records -->
+        <div class="glass-card rounded-3xl p-6 mt-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i> 最近測量紀錄
+                </h3>
+                <button onclick="clearHistory()" class="text-xs text-slate-400 hover:text-rose-400 transition">
+                    <i class="fa-solid fa-trash-can mr-1"></i> 清除紀錄
+                </button>
+            </div>
+            <div id="historyList" class="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+                <span class="text-xs text-slate-500">暫無歷史紀錄</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-xs text-slate-500 py-4 z-10">
+        © 劉芳君bmi系統 · 版權所有 衛福部標準參考
+    </footer>
+
+    <!-- Logic JavaScript -->
+    <script>
+        const heightInput = document.getElementById('heightInput');
+        const heightSlider = document.getElementById('heightSlider');
+        const weightInput = document.getElementById('weightInput');
+        const weightSlider = document.getElementById('weightSlider');
+
+        const progressRing = document.getElementById('progressRing');
+        const circumference = 2 * Math.PI * 40;
+        progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+
+        // Sync Sliders and Inputs
+        function bindPair(input, slider) {
+            input.addEventListener('input', () => { slider.value = input.value; playBeep(200); });
+            slider.addEventListener('input', () => { input.value = slider.value; playBeep(200); });
+        }
+        bindPair(heightInput, heightSlider);
+        bindPair(weightInput, weightSlider);
+
+        // Web Audio API Sound Generator
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq = 440) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        }
+
+        // BMI Status Definitions according to Ministry of Health and Welfare (TW)
+        const bmiCategories = [
+            { min: 0, max: 18.5, label: '體重過輕', color: '#60a5fa', text: 'text-blue-400', diet: '建議增加優質蛋白質與原型澱粉攝取，進行適度肌力訓練。', exercise: '重量訓練與負重運動，增加肌肉量。' },
+            { min: 18.5, max: 24, label: '正常範圍', color: '#4ade80', text: 'text-emerald-400', diet: '維持均衡飲食，多攝取膳食纖維與充足水分。', exercise: '每週保持至少 150 分鐘中強度有氧運動。' },
+            { min: 24, max: 27, label: '過重', color: '#facc15', text: 'text-yellow-400', diet: '控制每日總熱量攝取，減少含糖飲料與高油炸食物。', exercise: '增加快走、慢跑或游泳等有氧運動。' },
+            { min: 27, max: 30, label: '輕度肥胖', color: '#fb923c', text: 'text-orange-400', diet: '採取低 GI 飲食，實行總熱量赤字計劃。', exercise: '每週 3-5 天進行中高強度有氧運動與全身核心訓練。' },
+            { min: 30, max: 35, label: '中度肥胖', color: '#f87171', text: 'text-rose-400', diet: '避免精緻糖與高飽和脂肪，尋求營養師客製化餐單。', exercise: '循序漸進增加運動量，減輕關節負擔。' },
+            { min: 35, max: 999, label: '重度肥胖', color: '#e879f9', text: 'text-fuchsia-400', diet: '尋求專業醫療團隊與營養師諮詢健康飲食計畫。', exercise: '建議在醫師與專業教練指導下進行低衝擊運動。' }
+        ];
+
+        function calculateBMI() {
+            playBeep(600);
+            const height = parseFloat(heightInput.value) / 100; // cm to m
+            const weight = parseFloat(weightInput.value);
+
+            if (!height || !weight || height <= 0 || weight <= 0) return;
+
+            const bmi = (weight / (height * height)).toFixed(1);
+            const idealMin = (18.5 * height * height).toFixed(1);
+            const idealMax = (24 * height * height).toFixed(1);
+
+            // Find category
+            const category = bmiCategories.find(c => bmi >= c.min && bmi < c.max) || bmiCategories[5];
+
+            // Update UI Score & Badge
+            document.getElementById('bmiScore').innerText = bmi;
+            const badge = document.getElementById('bmiStatusBadge');
+            badge.innerText = category.label;
+            badge.className = `px-3 py-0.5 rounded-full text-xs font-black bg-slate-900 border border-white/20 ${category.text}`;
+
+            // Update Ring Gauge
+            const percent = Math.min(Math.max((bmi - 10) / 30, 0), 1);
+            const offset = circumference - (percent * circumference);
+            progressRing.style.strokeDashoffset = offset;
+            progressRing.style.stroke = category.color;
+
+            // Ideal Weight
+            document.getElementById('idealWeightText').innerText = `${idealMin} kg ~ ${idealMax} kg`;
+
+            // Advice Section
+            document.getElementById('dietAdvice').innerText = category.diet;
+            document.getElementById('exerciseAdvice').innerText = category.exercise;
+            document.getElementById('adviceSection').classList.remove('hidden');
+
+            // Trigger Confetti if Normal
+            if (category.label === '正常範圍') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            }
+
+            // Save to LocalStorage History
+            saveHistory(bmi, category.label, category.color);
+        }
+
+        function saveHistory(bmi, label, color) {
+            let history = JSON.parse(localStorage.getItem('liu_bmi_history') || '[]');
+            const record = {
+                bmi,
+                label,
+                color,
+                date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+            };
+            history.unshift(record);
+            history = history.slice(0, 8); // Keep last 8 records
+            localStorage.setItem('liu_bmi_history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            const history = JSON.parse(localStorage.getItem('liu_bmi_history') || '[]');
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<span class="text-xs text-slate-500">暫無歷史紀錄</span>';
+                return;
+            }
+
+            historyList.innerHTML = history.map(h => `
+                <div class="flex-shrink-0 bg-slate-900/60 border border-white/10 rounded-2xl px-4 py-2.5 flex flex-col items-center min-w-[100px]">
+                    <span class="text-xs text-slate-400 font-bold">${h.date}</span>
+                    <span class="text-lg font-black text-white">${h.bmi}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="color:${h.color}; background:${h.color}15;">${h.label}</span>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('liu_bmi_history');
+            renderHistory();
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            renderHistory();
+            calculateBMI();
+        };
+    </script>
+</body>
+</html>
